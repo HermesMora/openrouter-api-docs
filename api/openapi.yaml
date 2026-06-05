@@ -23,10 +23,6 @@ servers:
   - url: https://openrouter.ai/api
     description: Production API (versionless)
 
-security:
-  - bearerAuth: []
-  - httpBearer: []
-
 tags:
   - name: Chat
     description: Chat completion endpoints
@@ -43,6 +39,8 @@ tags:
 
 paths:
   /chat/completions:
+    security:
+      - bearerAuth: []
     post:
       operationId: createChatCompletion
       summary: Create chat completion
@@ -89,11 +87,12 @@ paths:
           $ref: "./schemas/errors/InternalError.yaml"
 
   /models:
+    security: []
     get:
       operationId: listModels
       summary: List available models
       description: |
-        Returns a list of all available models on OpenRouter,
+        Returns a list of all available models on OpenRouter.
         including pricing, context length, and capabilities.
       tags:
         - Models
@@ -110,6 +109,7 @@ paths:
           $ref: "./schemas/errors/UnauthorizedError.yaml"
 
   /models/{id}:
+    security: []
     get:
       operationId: getModel
       summary: Get model information
@@ -142,6 +142,8 @@ paths:
           $ref: "./schemas/errors/NotFoundError.yaml"
 
   /auth/key:
+    security:
+      - bearerAuth: []
     get:
       operationId: getApiKeyInfo
       summary: Get API key information
@@ -163,6 +165,8 @@ paths:
           $ref: "./schemas/errors/UnauthorizedError.yaml"
 
   /credits:
+    security:
+      - bearerAuth: []
     get:
       operationId: getCredits
       summary: Get credit balance
