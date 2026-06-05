@@ -1,0 +1,29 @@
+type: object
+description: Technical architecture details of the model
+properties:
+  modality:
+    type: string
+    description: Input/output modality of the model
+    enum:
+      - text+text
+      - text+image->text
+      - image->text
+    examples:
+      - "text+text"
+      - "text+image->text"
+  
+  tokenizer:
+    type: string
+    description: Tokenizer used by the model
+    examples:
+      - "Claude"
+      - "GPT"
+      - "Llama"
+  
+  instruct_type:
+    type: string
+    nullable: true
+    description: Type of instruction tuning, if applicable
+    examples:
+      - "chatml"
+      - "alpaca"

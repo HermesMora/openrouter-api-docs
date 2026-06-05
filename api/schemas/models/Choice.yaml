@@ -1,0 +1,32 @@
+type: object
+description: A completion choice returned by the model
+required:
+  - index
+  - message
+  - finish_reason
+properties:
+  index:
+    type: integer
+    description: Index of this choice in the list
+    minimum: 0
+  
+  message:
+    $ref: "./Message.yaml"
+  
+  finish_reason:
+    type: string
+    description: Reason the model stopped generating
+    enum:
+      - stop
+      - length
+      - tool_calls
+      - content_filter
+      - null
+    examples:
+      - "stop"
+      - "tool_calls"
+  
+  logprobs:
+    type: object
+    nullable: true
+    description: Log probability information for the choice

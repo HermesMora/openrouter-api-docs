@@ -1,0 +1,43 @@
+---
+title: "Model Routing"
+description: "Configure fallback models and routing preferences"
+---
+
+# Model Routing
+
+OpenRouter supports intelligent model routing to ensure reliability and optimize costs.
+
+## Fallback Routing
+
+When your primary model is unavailable, automatically try fallback models:
+
+```json
+{
+  "model": "anthropic/claude-3.5-sonnet",
+  "messages": [...],
+  "models": [
+    "anthropic/claude-3-haiku",
+    "openai/gpt-4o-mini"
+  ],
+  "route": "fallback"
+}
+```
+
+## Routing Behavior
+
+1. Primary model is attempted first
+2. If primary fails, fallbacks are tried in order
+3. First successful response is returned
+4. If all fail, error from primary is returned
+
+## Use Cases
+
+- **Reliability**: Ensure uptime when providers have issues
+- **Cost optimization**: Try expensive model first, fall back to cheaper
+- **Latency**: Try fast model first, fall back to more capable
+
+## Best Practices
+
+- Order fallbacks by preference
+- Include models with similar capabilities
+- Monitor fallback usage in dashboard

@@ -1,0 +1,16 @@
+description: Internal Server Error - Something went wrong on our end
+content:
+  application/json:
+    schema:
+      allOf:
+        - $ref: "./Error.yaml"
+        - type: object
+          properties:
+            error:
+              properties:
+                type:
+                  examples:
+                    - "internal_error"
+                code:
+                  examples:
+                    - "internal_server_error"

@@ -1,0 +1,71 @@
+---
+title: "Models"
+description: "Understanding available models and how to select them"
+---
+
+# Models
+
+OpenRouter provides access to hundreds of AI models from various providers through a unified API.
+
+## Model IDs
+
+Models are identified by a provider-prefixed ID:
+
+```
+{provider}/{model-name}
+```
+
+Examples:
+- `anthropic/claude-3.5-sonnet`
+- `openai/gpt-4o`
+- `meta-llama/llama-3.1-405b-instruct`
+- `google/gemini-1.5-pro`
+
+## Listing Models
+
+Get all available models:
+
+```bash
+curl https://openrouter.ai/api/v1/models \
+  -H "Authorization: Bearer ***
+```
+
+## Model Properties
+
+Each model includes:
+
+| Property | Description |
+|----------|-------------|
+| `id` | Unique model identifier |
+| `name` | Human-readable name |
+| `description` | Brief capability description |
+| `pricing` | Cost per 1M tokens |
+| `context_length` | Max tokens in context window |
+| `architecture` | Modality and tokenizer info |
+
+## Pricing
+
+Pricing is per 1M tokens:
+
+```json
+{
+  "pricing": {
+    "prompt": 3.0,
+    "completion": 15.0,
+    "image": null,
+    "request": null
+  }
+}
+```
+
+## Routing
+
+Use fallback models for reliability:
+
+```json
+{
+  "model": "anthropic/claude-3.5-sonnet",
+  "models": ["anthropic/claude-3-haiku", "openai/gpt-4o-mini"],
+  "route": "fallback"
+}
+```

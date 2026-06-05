@@ -1,0 +1,25 @@
+type: object
+description: Image content part
+allOf:
+  - $ref: "./ContentPart.yaml"
+  - type: object
+    required:
+      - image_url
+    properties:
+      image_url:
+        type: object
+        required:
+          - url
+        properties:
+          url:
+            type: string
+            format: uri
+            description: URL of the image or base64-encoded data URI
+          detail:
+            type: string
+            description: Level of detail for image processing
+            enum:
+              - auto
+              - low
+              - high
+            default: auto

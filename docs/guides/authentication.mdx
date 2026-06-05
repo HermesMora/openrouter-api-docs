@@ -1,0 +1,42 @@
+---
+title: "Authentication"
+description: "How to authenticate with the OpenRouter API"
+---
+
+# Authentication
+
+OpenRouter uses Bearer token authentication. Your API key is passed in the `Authorization` header.
+
+## API Keys
+
+Get your API key from [openrouter.ai/keys](https://openrouter.ai/keys).
+
+## Using Your Key
+
+Include your API key in the `Authorization` header of every request:
+
+```bash
+curl https://openrouter.ai/api/v1/chat/completions \
+  -H "Authorization: Bearer sk-or-v1-..." \
+  -H "Content-Type: application/json" \
+  -d '{"model": "anthropic/claude-3.5-sonnet", "messages": [{"role": "user", "content": "Hello!"}]}'
+```
+
+## Security Best Practices
+
+- Never commit API keys to version control
+- Use environment variables for key storage
+- Rotate keys regularly
+- Use separate keys for development and production
+- Monitor usage in your [dashboard](https://openrouter.ai/keys)
+
+## Rate Limits
+
+Rate limits vary by account tier:
+
+| Tier | Requests | Notes |
+|------|----------|-------|
+| Free | Limited | Subject to availability |
+| Paid | Higher | Based on credit balance |
+
+Check your current rate limit status via the `/auth/key` endpoint.

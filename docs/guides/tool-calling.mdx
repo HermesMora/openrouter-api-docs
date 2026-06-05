@@ -1,0 +1,96 @@
+---
+title: "Tool Calling"
+description: "Enable models to call external functions and APIs"
+---
+
+# Tool Calling
+
+Tool calling (also known as function calling) allows models to invoke external functions.
+
+## Defining Tools
+
+Tools are defined using JSON Schema:
+
+```json
+{
+  "model": "anthropic/claude-3.5-sonnet",
+  "messages": [{"role": "user", "content": "What's the weather in SF?"}],
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "get_weather",
+        "description": "Get current weather for a location",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "location": {
+              "type": "string",
+              "description": "City name"
+            },
+            "unit": {
+              "type": "string",
+              "enum": ["celsius", "fahrenheit"]
+            }
+          },
+          "required": ["location"]
+        }
+      }
+    }
+  ]
+}
+```
+
+## Tool Choice
+
+Control when tools are used:
+
+| Value | Behavior |
+|-------|----------|
+| `auto` | Model decides whether to use tools |
+| `none` | Never use tools |
+| `required` | Must use a tool |
+| `{type: "function", function: {name: "..."}}` | Force specific tool |
+
+## Handling Tool Calls
+
+When a model calls a tool, the response includes:
+
+```json
+{
+  "choices": [{
+    "message": {
+      "role": "assistant",
+      "content": null,
+      "tool_calls": [{
+        "id": "call_abc123",
+        "type": "function",
+        "function": {
+          "name": "get_weather",
+          "arguments": "{\"location\":\"San Francisco\"}"
+        }
+      }]
+    },
+    "finish_reason": "tool_calls"
+  }]
+}
+```
+
+## Completing the Conversation
+
+Execute the function and send the result back:
+
+```json
+{
+  "model": "anthropic/claude-3.5-sonnet",
+  "messages": [
+    {"role": "user", "content": "What's the weather in SF?"},
+    {"role": "assistant", "content": null, "tool_calls": [...]},
+    {
+      "role": "tool",
+      "tool_call_id": "call_abc123",
+      "content": "{\"temperature\": 72, \"condition\": \"sunny\"}"
+    }
+  ]
+}
+```

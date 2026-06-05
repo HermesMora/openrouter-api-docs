@@ -1,0 +1,44 @@
+name: Breaking Change Detection
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'api/**'
+
+jobs:
+  breaking-change:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install Optic
+        run: npm install -g @useoptic/optic
+
+      - name: Check for breaking changes
+        run: |
+          optic diff api/openapi.yaml --base origin/main --ruleset breaking-changes
+        env:
+          OPTIC_TOKEN: ${{ secrets.OPTIC_TOKEN }}
+        continue-on-error: true
+
+      - name: Comment PR with results
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const comment = 'Breaking change detection completed. Check the Actions tab for details.';
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: comment
+            });

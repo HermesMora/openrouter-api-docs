@@ -1,0 +1,45 @@
+type: object
+description: Information about the authenticated API key
+required:
+  - data
+properties:
+  data:
+    type: object
+    required:
+      - label
+      - usage
+      - limit
+      - is_free_tier
+    properties:
+      label:
+        type: string
+        description: Human-readable label for the key
+      
+      usage:
+        type: number
+        format: float
+        description: Current usage in credits
+      
+      limit:
+        type: number
+        format: float
+        nullable: true
+        description: Usage limit in credits (null if unlimited)
+      
+      is_free_tier:
+        type: boolean
+        description: Whether this is a free-tier key
+      
+      rate_limit:
+        type: object
+        description: Rate limit information
+        properties:
+          requests:
+            type: integer
+            description: Maximum requests per time window
+          interval:
+            type: string
+            description: Time window for rate limiting
+            examples:
+              - "10s"
+              - "1m"

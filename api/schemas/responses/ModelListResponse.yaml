@@ -1,0 +1,19 @@
+type: object
+description: Response containing a list of available models
+required:
+  - data
+  - object
+properties:
+  object:
+    type: string
+    description: Object type
+    enum:
+      - list
+    examples:
+      - "list"
+  
+  data:
+    type: array
+    description: List of available models
+    items:
+      $ref: "../models/Model.yaml"

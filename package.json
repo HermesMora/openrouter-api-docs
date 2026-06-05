@@ -1,0 +1,25 @@
+{
+  "name": "openrouter-api-docs",
+  "version": "1.0.0",
+  "description": "Unified OpenRouter API documentation and specification",
+  "private": true,
+  "scripts": {
+    "validate": "bash scripts/validate.sh",
+    "bundle": "bash scripts/bundle.sh",
+    "lint": "spectral lint api/openapi.yaml --ruleset .spectral.yaml",
+    "docs:dev": "cd docs && mintlify dev",
+    "docs:build": "cd docs && mintlify build",
+    "docs:deploy": "cd docs && mintlify deploy"
+  },
+  "devDependencies": {
+    "@apidevtools/swagger-cli": "^4.0.4",
+    "@stoplight/spectral-cli": "^6.11.0",
+    "openapi-examples-validator": "^2.0.0",
+    "mintlify": "^4.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/OpenRouterTeam/api-docs.git"
+  },
+  "license": "MIT"
+}

@@ -1,0 +1,49 @@
+name: Generate Artifacts
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'api/**'
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: |
+          npm install -g @apidevtools/swagger-cli
+          npm install -g openapi-to-postmanv2
+
+      - name: Generate bundled OpenAPI JSON
+        run: |
+          mkdir -p dist
+          swagger-cli bundle api/openapi.yaml --outfile dist/openapi.json --type json
+          swagger-cli bundle api/openapi.yaml --outfile dist/openapi.yaml --type yaml
+
+      - name: Generate Postman collection
+        run: |
+          openapi2postmanv2 -s dist/openapi.json -o dist/collection.json -O folderStrategy=Tags
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: api-artifacts
+          path: dist/
+
+      - name: Create Release
+        if: github.ref == 'refs/heads/main'
+        uses: softprops/action-gh-release@v1
+        with:
+          files: dist/*
+          tag_name: api-${{ github.sha }}
+          generate_release_notes: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

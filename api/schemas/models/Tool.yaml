@@ -1,0 +1,47 @@
+type: object
+description: A tool that can be called by the model
+required:
+  - type
+  - function
+properties:
+  type:
+    type: string
+    description: Type of tool
+    enum:
+      - function
+    examples:
+      - "function"
+  
+  function:
+    type: object
+    required:
+      - name
+      - description
+      - parameters
+    properties:
+      name:
+        type: string
+        description: Name of the function
+        examples:
+          - "get_weather"
+          - "calculate"
+      
+      description:
+        type: string
+        description: Description of what the function does
+      
+      parameters:
+        type: object
+        description: JSON Schema for the function parameters
+        properties:
+          type:
+            type: string
+            enum:
+              - object
+          properties:
+            type: object
+            description: Parameter definitions
+          required:
+            type: array
+            items:
+              type: string

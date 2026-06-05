@@ -1,0 +1,51 @@
+type: object
+description: Token usage information for the request
+required:
+  - prompt_tokens
+  - completion_tokens
+  - total_tokens
+properties:
+  prompt_tokens:
+    type: integer
+    description: Number of tokens in the prompt
+    minimum: 0
+  
+  completion_tokens:
+    type: integer
+    description: Number of tokens in the completion
+    minimum: 0
+  
+  total_tokens:
+    type: integer
+    description: Total tokens used (prompt + completion)
+    minimum: 0
+  
+  prompt_tokens_details:
+    type: object
+    nullable: true
+    description: Breakdown of prompt tokens
+    properties:
+      cached_tokens:
+        type: integer
+        description: Number of cached prompt tokens
+      audio_tokens:
+        type: integer
+        description: Number of audio prompt tokens
+  
+  completion_tokens_details:
+    type: object
+    nullable: true
+    description: Breakdown of completion tokens
+    properties:
+      reasoning_tokens:
+        type: integer
+        description: Number of reasoning tokens
+      audio_tokens:
+        type: integer
+        description: Number of audio completion tokens
+      accepted_prediction_tokens:
+        type: integer
+        description: Number of accepted prediction tokens
+      rejected_prediction_tokens:
+        type: integer
+        description: Number of rejected prediction tokens

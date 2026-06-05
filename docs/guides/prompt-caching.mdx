@@ -1,0 +1,49 @@
+---
+title: "Prompt Caching"
+description: "Reduce costs and latency with prompt caching"
+---
+
+# Prompt Caching
+
+Some models support prompt caching to reduce costs for repeated prefixes.
+
+## Supported Models
+
+Prompt caching is available on select models. Check the model's `architecture` details or the [model listing](/api-reference/models) for caching support.
+
+## How It Works
+
+1. First request: Full prompt is processed and cached
+2. Subsequent requests: Only new tokens are billed
+3. Cache hit: Significant cost reduction (typically 50-90%)
+
+## Usage
+
+No special API parameters needed. Caching is automatic for supported models when:
+- Prompt prefix is identical
+- Model supports caching
+- Provider has caching enabled
+
+## Monitoring Cache Hits
+
+Check usage details in responses:
+
+```json
+{
+  "usage": {
+    "prompt_tokens": 1000,
+    "completion_tokens": 50,
+    "total_tokens": 1050,
+    "prompt_tokens_details": {
+      "cached_tokens": 900
+    }
+  }
+}
+```
+
+## Best Practices
+
+- Keep system prompts consistent
+- Reuse conversation contexts
+- Structure prompts with static prefixes
+- Monitor cache hit rates in dashboard

@@ -1,0 +1,25 @@
+type: object
+description: Credit balance information
+required:
+  - data
+properties:
+  data:
+    type: object
+    required:
+      - total_credits
+      - total_usage
+    properties:
+      total_credits:
+        type: number
+        format: float
+        description: Total credits purchased
+      
+      total_usage:
+        type: number
+        format: float
+        description: Total credits used
+      
+      balance:
+        type: number
+        format: float
+        description: Remaining credit balance (total_credits - total_usage)

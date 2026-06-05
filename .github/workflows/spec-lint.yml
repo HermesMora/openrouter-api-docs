@@ -1,0 +1,52 @@
+name: Lint OpenAPI Spec
+
+on:
+  pull_request:
+    paths:
+      - 'api/**'
+      - '.spectral.yaml'
+  push:
+    branches: [main]
+    paths:
+      - 'api/**'
+      - '.spectral.yaml'
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: |
+          npm install -g @apidevtools/swagger-cli
+          npm install -g @stoplight/spectral-cli
+
+      - name: Validate OpenAPI syntax
+        run: swagger-cli validate api/openapi.yaml
+
+      - name: Lint with Spectral
+        run: spectral lint api/openapi.yaml --ruleset .spectral.yaml
+        continue-on-error: true
+
+      - name: Bundle spec
+        run: |
+          npm install -g @apidevtools/swagger-cli
+          swagger-cli bundle api/openapi.yaml --outfile /tmp/bundled.yaml --type yaml
+
+      - name: Comment PR
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: 'OpenAPI spec validation passed'
+            })

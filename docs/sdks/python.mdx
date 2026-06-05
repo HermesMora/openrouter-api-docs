@@ -1,0 +1,71 @@
+---
+title: "Python SDK"
+description: "Official Python SDK for OpenRouter"
+---
+
+# Python SDK
+
+## Installation
+
+```bash
+pip install openrouter
+# or
+poetry add openrouter
+```
+
+## Quick Start
+
+```python
+from openrouter import OpenRouter
+
+client = OpenRouter(api_key="your-api-key")
+
+completion = client.chat.completions.create(
+    model="anthropic/claude-3.5-sonnet",
+    messages=[{"role": "user", "content": "Hello!"}]
+)
+
+print(completion.choices[0].message.content)
+```
+
+## Streaming
+
+```python
+stream = client.chat.completions.create(
+    model="anthropic/claude-3.5-sonnet",
+    messages=[{"role": "user", "content": "Hello!"}],
+    stream=True
+)
+
+for chunk in stream:
+    content = chunk.choices[0].delta.content
+    if content:
+        print(content, end="")
+```
+
+## Async Usage
+
+```python
+import asyncio
+from openrouter import AsyncOpenRouter
+
+client = AsyncOpenRouter(api_key="your-api-key")
+
+async def main():
+    completion = await client.chat.completions.create(
+        model="anthropic/claude-3.5-sonnet",
+        messages=[{"role": "user", "content": "Hello!"}]
+    )
+    print(completion.choices[0].message.content)
+
+asyncio.run(main())
+```
+
+## Configuration
+
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `api_key` | str | - | Your OpenRouter API key |
+| `base_url` | str | "https://openrouter.ai/api/v1" | API base URL |
+| `timeout` | float | 60.0 | Request timeout in seconds |
+| `max_retries` | int | 2 | Maximum retry attempts |

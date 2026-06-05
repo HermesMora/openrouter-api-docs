@@ -1,0 +1,79 @@
+---
+title: "TypeScript SDK"
+description: "Official TypeScript/JavaScript SDK for OpenRouter"
+---
+
+# TypeScript SDK
+
+## Installation
+
+```bash
+npm install openrouter
+# or
+yarn add openrouter
+# or
+pnpm add openrouter
+```
+
+## Quick Start
+
+```typescript
+import OpenRouter from "openrouter";
+
+const client = new OpenRouter({
+  apiKey: process.env.OPENROUTER_API_KEY
+});
+
+const completion = await client.chat.completions.create({
+  model: "anthropic/claude-3.5-sonnet",
+  messages: [{ role: "user", content: "Hello!" }]
+});
+
+console.log(completion.choices[0].message.content);
+```
+
+## Streaming
+
+```typescript
+const stream = await client.chat.completions.create({
+  model: "anthropic/claude-3.5-sonnet",
+  messages: [{ role: "user", content: "Hello!" }],
+  stream: true
+});
+
+for await (const chunk of stream) {
+  process.stdout.write(chunk.choices[0]?.delta?.content || "");
+}
+```
+
+## Tool Calling
+
+```typescript
+const response = await client.chat.completions.create({
+  model: "anthropic/claude-3.5-sonnet",
+  messages: [{ role: "user", content: "What's the weather?" }],
+  tools: [{
+    type: "function",
+    function: {
+      name: "get_weather",
+      description: "Get weather for a location",
+      parameters: {
+        type: "object",
+        properties: {
+          location: { type: "string" }
+        },
+        required: ["location"]
+      }
+    }
+  }]
+});
+```
+
+## Configuration
+
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `apiKey` | string | - | Your OpenRouter API key |
+| `baseURL` | string | "https://openrouter.ai/api/v1" | API base URL |
+| `timeout` | number | 60000 | Request timeout in ms |
+| `maxRetries` | number | 2 | Maximum retry attempts |

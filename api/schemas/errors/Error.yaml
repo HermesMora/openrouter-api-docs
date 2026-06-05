@@ -1,0 +1,28 @@
+type: object
+description: Base error response structure
+required:
+  - error
+properties:
+  error:
+    type: object
+    required:
+      - message
+      - type
+    properties:
+      message:
+        type: string
+        description: Human-readable error message
+      
+      type:
+        type: string
+        description: Error type identifier
+      
+      param:
+        type: string
+        nullable: true
+        description: Parameter that caused the error, if applicable
+      
+      code:
+        type: string
+        nullable: true
+        description: Error code for programmatic handling

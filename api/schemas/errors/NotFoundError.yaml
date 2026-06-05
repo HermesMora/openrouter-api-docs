@@ -1,0 +1,16 @@
+description: Not Found - The requested resource does not exist
+content:
+  application/json:
+    schema:
+      allOf:
+        - $ref: "./Error.yaml"
+        - type: object
+          properties:
+            error:
+              properties:
+                type:
+                  examples:
+                    - "not_found_error"
+                code:
+                  examples:
+                    - "resource_not_found"

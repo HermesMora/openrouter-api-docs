@@ -1,0 +1,40 @@
+type: object
+description: Pricing information for a model
+title: ModelPricing
+required:
+  - prompt
+  - completion
+  - image
+  - request
+properties:
+  prompt:
+    type: number
+    format: float
+    description: Cost per 1M prompt tokens in USD
+    minimum: 0
+    examples:
+      - 3.0
+      - 15.0
+  
+  completion:
+    type: number
+    format: float
+    description: Cost per 1M completion tokens in USD
+    minimum: 0
+    examples:
+      - 15.0
+      - 60.0
+  
+  image:
+    type: number
+    format: float
+    description: Cost per image input in USD
+    minimum: 0
+    nullable: true
+  
+  request:
+    type: number
+    format: float
+    description: Cost per request in USD
+    minimum: 0
+    nullable: true

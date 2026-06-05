@@ -1,0 +1,16 @@
+description: Unauthorized - Invalid or missing API key
+content:
+  application/json:
+    schema:
+      allOf:
+        - $ref: "./Error.yaml"
+        - type: object
+          properties:
+            error:
+              properties:
+                type:
+                  examples:
+                    - "authentication_error"
+                code:
+                  examples:
+                    - "invalid_api_key"

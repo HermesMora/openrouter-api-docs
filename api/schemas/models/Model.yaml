@@ -1,0 +1,64 @@
+type: object
+description: |
+  Represents an AI model available through OpenRouter.
+  Models are identified by a provider-prefixed ID (e.g., "anthropic/claude-3.5-sonnet").
+required:
+  - id
+  - name
+  - description
+  - pricing
+  - context_length
+properties:
+  id:
+    type: string
+    description: Unique model identifier with provider prefix
+    examples:
+      - "anthropic/claude-3.5-sonnet"
+      - "openai/gpt-4o"
+      - "meta-llama/llama-3.1-405b-instruct"
+  
+  name:
+    type: string
+    description: Human-readable model name
+    examples:
+      - "Claude 3.5 Sonnet"
+      - "GPT-4o"
+  
+  description:
+    type: string
+    description: Brief description of the model's capabilities
+  
+  pricing:
+    $ref: "./Pricing.yaml"
+  
+  context_length:
+    type: integer
+    description: Maximum context window size in tokens
+    minimum: 1
+    examples:
+      - 128000
+      - 200000
+  
+  architecture:
+    $ref: "./Architecture.yaml"
+  
+  top_provider:
+    type: object
+    description: Information about the top provider for this model
+    properties:
+      context_length:
+        type: integer
+      max_completion_tokens:
+        type: integer
+      is_moderated:
+        type: boolean
+  
+  per_request_limits:
+    type: object
+    nullable: true
+    description: Limits applied per request, if any
+    properties:
+      prompt_tokens:
+        type: integer
+      completion_tokens:
+        type: integer

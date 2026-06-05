@@ -1,0 +1,10 @@
+summary: Streaming chat completion
+value:
+  model: "openai/gpt-4o"
+  messages:
+    - role: "system"
+      content: "You are a helpful assistant."
+    - role: "user"
+      content: "Write a haiku about programming."
+  stream: true
+  temperature: 0.8

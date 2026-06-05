@@ -1,0 +1,55 @@
+---
+title: "API Overview"
+description: "Overview of the OpenRouter API"
+---
+
+# API Overview
+
+The OpenRouter API provides a unified interface to hundreds of AI models.
+
+## Base URL
+
+```
+https://openrouter.ai/api/v1
+```
+
+## Authentication
+
+All requests require a Bearer token in the `Authorization` header:
+
+```bash
+Authorization: Bearer *** Versioning
+
+The API is versioned via URL path. Current version: `v1`.
+
+## Content Types
+
+- Request: `application/json`
+- Response: `application/json` or `text/event-stream` (for streaming)
+
+## Rate Limiting
+
+Rate limits are returned in response headers:
+
+| Header | Description |
+|--------|-------------|
+| `X-RateLimit-Limit` | Maximum requests allowed |
+| `X-RateLimit-Remaining` | Requests remaining in window |
+| `X-RateLimit-Reset` | Unix timestamp when limit resets |
+
+## Endpoints
+
+<Note>
+Full endpoint documentation is auto-generated from the OpenAPI specification.
+See the sidebar for detailed endpoint references.
+</Note>
+
+### Core Endpoints
+
+| Endpoint | Description |
+|----------|-------------|
+| `POST /chat/completions` | Create chat completion |
+| `GET /models` | List available models |
+| `GET /models/{id}` | Get model details |
+| `GET /auth/key` | Get API key info |
+| `GET /credits` | Get credit balance |

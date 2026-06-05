@@ -1,0 +1,54 @@
+extends: ["spectral:oas", "spectral:arazzo"]
+
+rules:
+  # OpenAPI 3.1 specific
+  oas3-api-servers: error
+  oas3-operation-security-defined: error
+  oas3-schema: error
+  oas3-unused-component: warn
+  
+  # Operation rules
+  operation-operationId: error
+  operation-description: warn
+  operation-tags: error
+  operation-tag-defined: error
+
+  # Schema rules
+  schema-description: warn
+  schema-examples: error
+  
+  # Parameter rules
+  path-params: error
+  path-param-not-in-path: error
+  path-param-no-slashes: error
+  
+  # Response rules
+  operation-success-response: error
+  operation-2xx-response: error
+  
+  # Custom OpenRouter rules
+  operation-x-audience:
+    description: Operations should specify target audience
+    given: "$.paths.*.*"
+    then:
+      function: truthy
+      field: "x-audience"
+    severity: warn
+    
+  operation-x-availability:
+    description: Operations should specify availability status
+    given: "$.paths.*.*"
+    then:
+      function: defined
+      field: "x-availability"
+    severity: warn
+
+  # Naming conventions
+  operationId-camelCase:
+    description: operationId should be camelCase
+    given: "$.paths.*.*.operationId"
+    then:
+      function: pattern
+      functionOptions:
+        match: "^[a-z][a-zA-Z0-9]*$"
+    severity: error

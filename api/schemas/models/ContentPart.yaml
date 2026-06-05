@@ -1,0 +1,15 @@
+type: object
+description: A part of a multimodal message content
+discriminator:
+  propertyName: type
+  mapping:
+    text: "#/components/schemas/TextContentPart"
+    image_url: "#/components/schemas/ImageContentPart"
+required:
+  - type
+properties:
+  type:
+    type: string
+    enum:
+      - text
+      - image_url

@@ -1,0 +1,45 @@
+type: object
+description: |
+  A message in the chat completion conversation.
+  Follows the OpenAI message format with OpenRouter extensions.
+required:
+  - role
+  - content
+properties:
+  role:
+    type: string
+    description: Role of the message sender
+    enum:
+      - system
+      - user
+      - assistant
+      - tool
+    examples:
+      - "user"
+      - "assistant"
+  
+  content:
+    oneOf:
+      - type: string
+        description: Text content of the message
+      - type: array
+        description: Array of content parts for multimodal messages
+        items:
+          $ref: "./ContentPart.yaml"
+  
+  name:
+    type: string
+    description: Name of the sender (for tool/function messages)
+    nullable: true
+  
+  tool_calls:
+    type: array
+    description: Tool calls made by the assistant
+    nullable: true
+    items:
+      $ref: "./ToolCall.yaml"
+  
+  tool_call_id:
+    type: string
+    description: ID of the tool call this message is responding to
+    nullable: true

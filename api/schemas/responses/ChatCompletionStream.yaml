@@ -1,0 +1,67 @@
+type: object
+description: |
+  Server-Sent Event (SSE) chunk for streaming chat completions.
+  Each chunk is a JSON object prefixed with "data: " and followed by two newlines.
+required:
+  - id
+  - object
+  - created
+  - model
+  - choices
+properties:
+  id:
+    type: string
+    description: Unique identifier for the completion stream
+  
+  object:
+    type: string
+    description: Object type
+    enum:
+      - chat.completion.chunk
+    examples:
+      - "chat.completion.chunk"
+  
+  created:
+    type: integer
+    description: Unix timestamp of when the chunk was created
+  
+  model:
+    type: string
+    description: ID of the model generating the completion
+  
+  choices:
+    type: array
+    description: List of completion choices in this chunk
+    items:
+      type: object
+      required:
+        - index
+        - delta
+      properties:
+        index:
+          type: integer
+          description: Index of this choice
+        delta:
+          type: object
+          description: Incremental content update
+          properties:
+            role:
+              type: string
+              description: Role (typically only in first chunk)
+            content:
+              type: string
+              description: Incremental text content
+            tool_calls:
+              type: array
+              items:
+                $ref: "../models/ToolCall.yaml"
+        finish_reason:
+          type: string
+          nullable: true
+          description: Reason for completion (null until final chunk)
+          enum:
+            - stop
+            - length
+            - tool_calls
+            - content_filter
+            - null

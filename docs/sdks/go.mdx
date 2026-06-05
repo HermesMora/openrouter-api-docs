@@ -1,0 +1,72 @@
+---
+title: "Go SDK"
+description: "Official Go SDK for OpenRouter"
+---
+
+# Go SDK
+
+## Installation
+
+```bash
+go get github.com/openrouter/openrouter-go
+```
+
+## Quick Start
+
+```go
+package main
+
+import (
+    "context"
+    "fmt"
+    "log"
+    "os"
+
+    "github.com/openrouter/openrouter-go"
+)
+
+func main() {
+    client := openrouter.NewClient(os.Getenv("OPENROUTER_API_KEY"))
+    
+    completion, err := client.Chat.Completions.Create(context.Background(), openrouter.ChatCompletionRequest{
+        Model: "anthropic/claude-3.5-sonnet",
+        Messages: []openrouter.Message{
+            {Role: "user", Content: "Hello!"},
+        },
+    })
+    if err != nil {
+        log.Fatal(err)
+    }
+    
+    fmt.Println(completion.Choices[0].Message.Content)
+}
+```
+
+## Streaming
+
+```go
+stream, err := client.Chat.Completions.CreateStream(context.Background(), openrouter.ChatCompletionRequest{
+    Model: "anthropic/claude-3.5-sonnet",
+    Messages: []openrouter.Message{
+        {Role: "user", Content: "Hello!"},
+    },
+})
+if err != nil {
+    log.Fatal(err)
+}
+
+for stream.Next() {
+    chunk := stream.Current()
+    if content := chunk.Choices[0].Delta.Content; content != "" {
+        fmt.Print(content)
+    }
+}
+```
+
+## Configuration
+
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `APIKey` | string | - | Your OpenRouter API key |
+| `BaseURL` | string | "https://openrouter.ai/api/v1" | API base URL |
+| `HTTPClient` | *http.Client | http.DefaultClient | Custom HTTP client |

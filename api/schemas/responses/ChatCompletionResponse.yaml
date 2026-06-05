@@ -1,0 +1,38 @@
+type: object
+description: Response from a chat completion request
+required:
+  - id
+  - object
+  - created
+  - model
+  - choices
+  - usage
+properties:
+  id:
+    type: string
+    description: Unique identifier for the completion
+  
+  object:
+    type: string
+    description: Object type
+    enum:
+      - chat.completion
+    examples:
+      - "chat.completion"
+  
+  created:
+    type: integer
+    description: Unix timestamp of when the completion was created
+  
+  model:
+    type: string
+    description: ID of the model used for the completion
+  
+  choices:
+    type: array
+    description: List of completion choices
+    items:
+      $ref: "../models/Choice.yaml"
+  
+  usage:
+    $ref: "../models/Usage.yaml"

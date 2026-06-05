@@ -1,0 +1,16 @@
+description: Bad Request - The request was malformed or missing required parameters
+content:
+  application/json:
+    schema:
+      allOf:
+        - $ref: "./Error.yaml"
+        - type: object
+          properties:
+            error:
+              properties:
+                type:
+                  examples:
+                    - "invalid_request_error"
+                code:
+                  examples:
+                    - "invalid_request"
