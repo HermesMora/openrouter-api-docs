@@ -5,38 +5,87 @@ description: "How to authenticate with the OpenRouter API"
 
 # Authentication
 
-OpenRouter uses Bearer token authentication. Your API key is passed in the `Authorization` header.
+OpenRouter uses Bearer token authentication for all API requests.
 
-## API Keys
+## API Key
 
-Get your API key from [openrouter.ai/keys](https://openrouter.ai/keys).
+Obtain your API key from [openrouter.ai/keys](https://openrouter.ai/keys).
 
-## Using Your Key
+## Authentication Header
 
-Include your API key in the `Authorization` header of every request:
+Include your API key in the `Authorization` header:
 
 ```bash
 curl https://openrouter.ai/api/v1/chat/completions \
-  -H "Authorization: Bearer sk-or-v1-..." \
+  -H "Authorization: Bearer $OPENROUTER_API_KEY" \
   -H "Content-Type: application/json" \
-  -d '{"model": "anthropic/claude-3.5-sonnet", "messages": [{"role": "user", "content": "Hello!"}]}'
+  -d '{
+    "model": "anthropic/claude-3.5-sonnet",
+    "messages": [{"role": "user", "content": "Hello!"}]
+  }'
 ```
 
-## Security Best Practices
+## Environment Variable
 
-- Never commit API keys to version control
-- Use environment variables for key storage
-- Rotate keys regularly
-- Use separate keys for development and production
-- Monitor usage in your [dashboard](https://openrouter.ai/keys)
+The SDKs support reading the API key from environment variables:
 
-## Rate Limits
+```bash
+export OPENROUTER_API_KEY="your-api-key"
+```
 
-Rate limits vary by account tier:
+## Public Endpoints
 
-| Tier | Requests | Notes |
-|------|----------|-------|
-| Free | Limited | Subject to availability |
-| Paid | Higher | Based on credit balance |
+The following endpoints do **not** require authentication:
 
-Check your current rate limit status via the `/auth/key` endpoint.
+| Endpoint | Description |
+|----------|-------------|
+| `GET /models` | List all available models |
+| `GET /models/{author}/{slug}/endpoints` | List endpoints for a model |
+
+## App Identification Headers
+
+For analytics and rankings, include these optional headers:
+
+| Header | Description | Example |
+|--------|-------------|---------|
+| `HTTP-Referer` | Your app's URL | `https://myapp.com` |
+| `X-OpenRouter-Title` | App display name | `My AI App` |
+| `X-OpenRouter-Categories` | Comma-separated categories | `cli-agent,cloud-agent` |
+
+```bash
+curl https://openrouter.ai/api/v1/chat/completions \
+  -H "Authorization: Bearer $OPENROUTER_API_KEY" \
+  -H "HTTP-Referer: https://myapp.com" \
+  -H "X-OpenRouter-Title: My AI App" \
+  -H "Content-Type: application/json" \
+  -d '{...}'
+```
+
+## Error Responses
+
+### 401 Unauthorized
+
+```json
+{
+  "error": {
+    "message": "Missing Authentication header",
+    "code": 401
+  }
+}
+```
+
+### 403 Forbidden
+
+```json
+{
+  "error": {
+    "message": "Insufficient permissions",
+    "code": 403
+  }
+}
+```
+
+## Management API Keys
+
+Some endpoints (like `/activity`) require a **management key** instead of a regular API key.
+Management keys have elevated permissions for organization-level operations.

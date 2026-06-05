@@ -1,0 +1,94 @@
+---
+title: "Observability"
+description: "Monitor and log your API usage"
+---
+
+# Observability
+
+OpenRouter provides observability integrations to monitor and log your API usage.
+
+## Supported Destinations
+
+| Destination | Type | Description |
+|-------------|------|-------------|
+| Arize | `arize` | ML observability platform |
+| Braintrust | `braintrust` | AI evaluation platform |
+| ClickHouse | `clickhouse` | Analytics database |
+| Datadog | `datadog` | Monitoring and analytics |
+| Grafana | `grafana` | Visualization platform |
+| Langfuse | `langfuse` | LLM observability |
+| LangSmith | `langsmith` | LLM tracing |
+| New Relic | `newrelic` | Application monitoring |
+| OpenTelemetry | `otel` | OpenTelemetry collector |
+| PostHog | `posthog` | Product analytics |
+| S3 | `s3` | AWS S3 storage |
+| Sentry | `sentry` | Error tracking |
+| Snowflake | `snowflake` | Data warehouse |
+| Weave | `weave` | Weights & Biases |
+| Webhook | `webhook` | Custom webhook |
+
+## List Destinations
+
+```bash
+curl https://openrouter.ai/api/v1/observability/destinations \
+  -H "Authorization: Bearer $OPENR...
+## Create a Destination
+
+```bash
+curl -X POST https://openrouter.ai/api/v1/observability/destinations \
+  -H "Authorization: Bearer $OPENR...EY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "My Datadog Integration",
+    "type": "datadog",
+    "config": {
+      "api_key": "dd-api-key",
+      "site": "datadoghq.com"
+    }
+  }'
+```
+
+## Get a Destination
+
+```bash
+curl https://openrouter.ai/api/v1/observability/destinations/{id} \
+  -H "Authorization: Bearer $OPENR...
+## Update a Destination
+
+```bash
+curl -X PATCH https://openrouter.ai/api/v1/observability/destinations/{id} \
+  -H "Authorization: Bearer $OPENR...EY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "config": {
+      "api_key": "new-api-key"
+    }
+  }'
+```
+
+## Delete a Destination
+
+```bash
+curl -X DELETE https://openrouter.ai/api/v1/observability/destinations/{id} \
+  -H "Authorization: Bearer $OPENR...
+## Filter Rules
+
+Configure filter rules to control which requests are logged:
+
+```json
+{
+  "filters": {
+    "models": ["anthropic/claude-3.5-sonnet"],
+    "status_codes": [200, 429],
+    "min_latency_ms": 100
+  }
+}
+```
+
+## Metadata Levels
+
+| Level | Description |
+|-------|-------------|
+| `basic` | Request/response summary |
+| `full` | Complete request/response bodies |
+| `none` | Disable logging |

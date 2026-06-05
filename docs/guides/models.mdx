@@ -5,67 +5,114 @@ description: "Understanding available models and how to select them"
 
 # Models
 
-OpenRouter provides access to hundreds of AI models from various providers through a unified API.
-
-## Model IDs
-
-Models are identified by a provider-prefixed ID:
-
-```
-{provider}/{model-name}
-```
-
-Examples:
-- `anthropic/claude-3.5-sonnet`
-- `openai/gpt-4o`
-- `meta-llama/llama-3.1-405b-instruct`
-- `google/gemini-1.5-pro`
+OpenRouter provides access to 300+ AI models from various providers through a unified API.
 
 ## Listing Models
 
-Get all available models:
+### Public Endpoint (No Auth)
 
 ```bash
-curl https://openrouter.ai/api/v1/models \
-  -H "Authorization: Bearer ***
+curl https://openrouter.ai/api/v1/models
+```
+
+Returns all available models with pricing, context length, and capabilities.
+
+### Response Format
+
+```json
+{
+  "data": [
+    {
+      "id": "anthropic/claude-3.5-sonnet",
+      "name": "Claude 3.5 Sonnet",
+      "description": "Anthropic's Claude 3.5 Sonnet model",
+      "pricing": {
+        "prompt": 0.000003,
+        "completion": 0.000015
+      },
+      "context_length": 200000,
+      "architecture": {
+        "modality": "text+image->text",
+        "tokenizer": "Claude",
+        "instruct_type": null
+      },
+      "top_provider": {
+        "context_length": 200000,
+        "max_completion_tokens": 8192,
+        "is_moderated": false
+      },
+      "per_request_limits": null
+    }
+  ]
+}
 ```
 
 ## Model Properties
 
-Each model includes:
+| Property | Description | Example |
+|----------|-------------|---------|
+| `id` | Unique model identifier | `anthropic/claude-3.5-sonnet` |
+| `name` | Human-readable name | `Claude 3.5 Sonnet` |
+| `description` | Model description | `Anthropic's...` |
+| `pricing.prompt` | Cost per input token | `0.000003` |
+| `pricing.completion` | Cost per output token | `0.000015` |
+| `context_length` | Maximum context window | `200000` |
+| `architecture.modality` | Input/output modalities | `text+image->text` |
+| `architecture.tokenizer` | Tokenizer used | `Claude` |
+| `top_provider.context_length` | Provider's context limit | `200000` |
+| `top_provider.max_completion_tokens` | Max output tokens | `8192` |
 
-| Property | Description |
-|----------|-------------|
-| `id` | Unique model identifier |
-| `name` | Human-readable name |
-| `description` | Brief capability description |
-| `pricing` | Cost per 1M tokens |
-| `context_length` | Max tokens in context window |
-| `architecture` | Modality and tokenizer info |
+## Model Endpoints
 
-## Pricing
+Get detailed endpoint information for a specific model:
 
-Pricing is per 1M tokens:
-
-```json
-{
-  "pricing": {
-    "prompt": 3.0,
-    "completion": 15.0,
-    "image": null,
-    "request": null
-  }
-}
+```bash
+curl https://openrouter.ai/api/v1/models/{author}/{slug}/endpoints
 ```
 
-## Routing
+Example:
+```bash
+curl https://openrouter.ai/api/v1/models/anthropic/claude-3.5-sonnet/endpoints
+```
 
-Use fallback models for reliability:
+## Model Count
 
-```json
-{
-  "model": "anthropic/claude-3.5-sonnet",
-  "models": ["anthropic/claude-3-haiku", "openai/gpt-4o-mini"],
-  "route": "fallback"
-}
+```bash
+curl https://openrouter.ai/api/v1/models/count
+```
+
+## User-Preferred Models
+
+```bash
+curl https://openrouter.ai/api/v1/models/user \
+  -H "Authorization: Bearer $OPENR...EY"
+```
+
+Returns models filtered by user's provider preferences.
+
+## Provider Information
+
+```bash
+curl https://openrouter.ai/api/v1/providers
+```
+
+Lists all available providers and their configurations.
+
+## Model Routing
+
+OpenRouter automatically routes requests to the best available provider.
+You can influence routing with these parameters:
+
+| Parameter | Description |
+|-----------|-------------|
+| `provider.sort` | Sort providers by latency, throughput, or price |
+| `provider.allow_fallbacks` | Allow fallback to other providers |
+| `provider.require_parameters` | Require specific provider parameters |
+
+## ZDR (Zero-Downtime Routing)
+
+Preview the impact of ZDR on available endpoints:
+
+```bash
+curl https://openrouter.ai/api/v1/endpoints/zdr
 ```

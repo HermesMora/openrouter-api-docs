@@ -1,0 +1,74 @@
+---
+title: "Audio"
+description: "Text-to-speech and speech-to-text endpoints"
+---
+
+# Audio
+
+OpenRouter supports audio generation and transcription through unified endpoints.
+
+## Text-to-Speech
+
+Convert text to speech:
+
+```bash
+curl -X POST https://openrouter.ai/api/v1/audio/speech \
+  -H "Authorization: Bearer $OPENROUTER_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "openai/tts-1",
+    "input": "Hello, this is a test.",
+    "voice": "alloy"
+  }'
+```
+
+### Request Body
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `model` | string | Yes | Model identifier |
+| `input` | string | Yes | Text to convert |
+| `voice` | string | Yes | Voice identifier |
+| `response_format` | string | No | Output format (mp3, opus, aac, flac) |
+| `speed` | number | No | Speech speed (0.25 to 4.0) |
+
+### Response
+
+Returns audio data in the requested format.
+
+## Speech-to-Text
+
+Transcribe audio to text:
+
+```bash
+curl -X POST https://openrouter.ai/api/v1/audio/transcriptions \
+  -H "Authorization: Bearer $OPENROUTER_API_KEY" \
+  -H "Content-Type: multipart/form-data" \
+  -F "file=@audio.mp3" \
+  -F "model=openai/whisper-1"
+```
+
+### Request Body
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `file` | file | Yes | Audio file to transcribe |
+| `model` | string | Yes | Model identifier |
+| `language` | string | No | Language code (e.g., "en") |
+| `prompt` | string | No | Prompt to guide transcription |
+| `response_format` | string | No | Output format (json, text, srt, vtt) |
+| `temperature` | number | No | Sampling temperature |
+
+### Response
+
+```json
+{
+  "text": "Hello, this is a test transcription."
+}
+```
+
+## Supported Models
+
+| Provider | TTS Models | STT Models |
+|----------|-----------|-----------|
+| OpenAI | tts-1, tts-1-hd | whisper-1 |

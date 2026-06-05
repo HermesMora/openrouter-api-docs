@@ -6,39 +6,36 @@
   },
   "favicon": "/favicon.svg",
   "colors": {
-    "primary": "#0D9373",
-    "light": "#55D799",
-    "dark": "#0A7A5E",
-    "background": {
-      "dark": "#090014"
-    },
+    "primary": "#0F172A",
+    "light": "#E2E8F0",
+    "dark": "#0F172A",
     "anchors": {
-      "from": "#FF7F57",
-      "to": "#9563FF"
+      "from": "#3B82F6",
+      "to": "#8B5CF6"
     }
   },
   "topbarLinks": [
     {
-      "name": "Status",
-      "url": "https://status.openrouter.ai"
+      "name": "API Reference",
+      "url": "https://openrouter.ai/docs/api-reference"
     },
     {
-      "name": "Discord",
-      "url": "https://discord.gg/fVyRaUDgxW"
+      "name": "Dashboard",
+      "url": "https://openrouter.ai/keys"
     }
   ],
   "topbarCtaButton": {
-    "name": "Get API Key",
-    "url": "https://openrouter.ai/keys"
+    "name": "Get Started",
+    "url": "https://openrouter.ai/docs/quickstart"
   },
   "tabs": [
     {
-      "name": "API Reference",
-      "url": "api-reference"
-    },
-    {
       "name": "Guides",
       "url": "guides"
+    },
+    {
+      "name": "API Reference",
+      "url": "api-reference"
     },
     {
       "name": "SDKs",
@@ -50,23 +47,34 @@
       "group": "Getting Started",
       "pages": [
         "guides/quickstart",
-        "guides/authentication",
-        "guides/error-handling"
+        "guides/authentication"
       ]
     },
     {
       "group": "Core Concepts",
       "pages": [
         "guides/models",
-        "guides/routing",
-        "guides/prompt-caching",
-        "guides/tool-calling",
-        "guides/streaming"
+        "guides/streaming",
+        "guides/error-handling"
       ]
     },
     {
-      "group": "API Reference",
+      "group": "Advanced Features",
       "pages": [
+        "guides/guardrails",
+        "guides/byok",
+        "guides/observability",
+        "guides/workspaces",
+        "guides/analytics",
+        "guides/tool-calling",
+        "guides/prompt-caching",
+        "guides/routing"
+      ]
+    },
+    {
+      "group": "API Endpoints",
+      "pages": [
+        "api-reference/endpoint-catalog",
         "api-reference/overview"
       ]
     },
@@ -77,19 +85,18 @@
         "sdks/python",
         "sdks/go"
       ]
+    },
+    {
+      "group": "SDK Generation",
+      "pages": [
+        "guides/sdk-generation"
+      ]
     }
   ],
-  "openapi": "../api/openapi.yaml",
-  "api": {
-    "baseUrl": "https://openrouter.ai/api/v1",
-    "auth": {
-      "method": "bearer",
-      "name": "Authorization"
-    }
-  },
   "footerSocials": {
-    "discord": "https://discord.gg/fVyRaUDgxW",
     "twitter": "https://twitter.com/openrouter",
-    "github": "https://github.com/OpenRouterTeam"
-  }
+    "github": "https://github.com/OpenRouterTeam",
+    "discord": "https://discord.gg/fVyRaUDgxW"
+  },
+  "openapi": "https://raw.githubusercontent.com/HermesMora/openrouter-api-docs/main/api/openapi.yaml"
 }

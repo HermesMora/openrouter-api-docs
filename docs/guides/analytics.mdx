@@ -1,0 +1,153 @@
+---
+title: "Analytics"
+description: "Track usage and performance with analytics"
+---
+
+# Analytics
+
+OpenRouter provides analytics endpoints to track your API usage and model performance.
+
+## User Activity
+
+Get user activity data grouped by endpoint for the last 30 days:
+
+```bash
+curl https://openrouter.ai/api/v1/activity \
+  -H "Authorization: Bearer *** \
+  -H "Content-Type: application/json"
+```
+
+**Requires:** Management API key
+
+### Response
+
+```json
+{
+  "data": [
+    {
+      "date": "2025-08-24",
+      "model": "openai/gpt-4.1",
+      "model_permaslug": "openai/gpt-4.1-2025-04-14",
+      "endpoint_id": "550e8400-e29b-41d4-a716-446655440000",
+      "provider_name": "OpenAI",
+      "usage": 0.015,
+      "byok_usage_inference": 0.012,
+      "requests": 5,
+      "prompt_tokens": 50,
+      "completion_tokens": 125,
+      "reasoning_tokens": 25
+    }
+  ]
+}
+```
+
+### Query Parameters
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `date` | string | Filter by UTC date (YYYY-MM-DD) |
+| `api_key_hash` | string | Filter by API key hash |
+| `user_id` | string | Filter by org member user ID |
+
+## Daily Rankings
+
+Get daily token totals for top 50 models:
+
+```bash
+curl https://openrouter.ai/api/v1/datasets/rankings-daily \
+  -H "Authorization: Bearer *** \
+  -H "Content-Type: application/json"
+```
+
+### Response
+
+```json
+{
+  "data": [
+    {
+      "date": "2025-08-24",
+      "model": "anthropic/claude-3.5-sonnet",
+      "tokens": 1500000000,
+      "requests": 500000
+    }
+  ],
+  "meta": {
+    "total_models": 50,
+    "date_range": {
+      "start": "2025-07-26",
+      "end": "2025-08-24"
+    }
+  }
+}
+```
+
+### Query Parameters
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `start_date` | string | Start date (YYYY-MM-DD) |
+| `end_date` | string | End date (YYYY-MM-DD) |
+| `category` | string | Filter by category |
+
+## Credits
+
+Get your current credit balance:
+
+```bash
+curl https://openrouter.ai/api/v1/credits \
+  -H "Authorization: Bearer *** \
+  -H "Content-Type: application/json"
+```
+
+### Response
+
+```json
+{
+  "data": {
+    "total_credits": 100.00,
+    "total_usage": 45.50,
+    "remaining_credits": 54.50,
+    "currency": "USD"
+  }
+}
+```
+
+## Generation Metadata
+
+Get request and usage metadata for a specific generation:
+
+```bash
+curl "https://openrouter.ai/api/v1/generation?id=gen_abc123" \
+  -H "Authorization: Bearer *** \
+  -H "Content-Type: application/json"
+```
+
+### Response
+
+```json
+{
+  "data": {
+    "id": "gen_abc123",
+    "model": "anthropic/claude-3.5-sonnet",
+    "created_at": 1234567890,
+    "usage": {
+      "prompt_tokens": 50,
+      "completion_tokens": 125,
+      "total_tokens": 175
+    },
+    "cost": 0.015
+  }
+}
+```
+
+## Generation Content
+
+Get stored prompt and completion content:
+
+```bash
+curl "https://openrouter.ai/api/v1/generation/content?id=gen_abc123" \
+  -H "Authorization: Bearer *** \
+  -H "Content-Type: application/json"
+```
+
+**Note:** Content retention depends on your plan settings.

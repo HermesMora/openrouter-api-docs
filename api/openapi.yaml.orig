@@ -1,0 +1,225 @@
+openapi: 3.1.0
+info:
+  title: OpenRouter API
+  description: |
+    OpenRouter provides a unified interface to hundreds of AI models.
+    This API allows you to query models, manage keys, and access
+    model information through a single endpoint.
+  version: 1.0.0
+  contact:
+    name: OpenRouter Support
+    url: https://openrouter.ai/docs
+    email: support@openrouter.ai
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+  x-logo:
+    url: https://openrouter.ai/logo.png
+    altText: OpenRouter Logo
+
+servers:
+  - url: https://openrouter.ai/api/v1
+    description: Production API
+  - url: https://openrouter.ai/api
+    description: Production API (versionless)
+
+security:
+  - bearerAuth: []
+  - httpBearer: []
+
+tags:
+  - name: Chat
+    description: Chat completion endpoints
+    x-displayName: Chat Completions
+  - name: Models
+    description: Model listing and information
+    x-displayName: Available Models
+  - name: Authentication
+    description: API key and authentication management
+    x-displayName: Authentication
+  - name: Credits
+    description: Credit balance and usage
+    x-displayName: Credits and Billing
+
+paths:
+  /chat/completions:
+    post:
+      operationId: createChatCompletion
+      summary: Create chat completion
+      description: |
+        Creates a chat completion for the given messages using the specified model.
+        Supports streaming responses via Server-Sent Events (SSE).
+      tags:
+        - Chat
+      x-audience: external
+      x-availability: stable
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "./schemas/requests/ChatCompletionRequest.yaml"
+            examples:
+              basic:
+                $ref: "./examples/chat-completion-basic.yaml"
+              streaming:
+                $ref: "./examples/chat-completion-streaming.yaml"
+              with-tools:
+                $ref: "./examples/chat-completion-tools.yaml"
+      responses:
+        "200":
+          description: Successful chat completion
+          content:
+            application/json:
+              schema:
+                $ref: "./schemas/responses/ChatCompletionResponse.yaml"
+              examples:
+                basic:
+                  $ref: "./examples/chat-completion-response-basic.yaml"
+            text/event-stream:
+              schema:
+                $ref: "./schemas/responses/ChatCompletionStream.yaml"
+        "400":
+          $ref: "./schemas/errors/BadRequestError.yaml"
+        "401":
+          $ref: "./schemas/errors/UnauthorizedError.yaml"
+        "429":
+          $ref: "./schemas/errors/RateLimitError.yaml"
+        "500":
+          $ref: "./schemas/errors/InternalError.yaml"
+
+  /models:
+    get:
+      operationId: listModels
+      summary: List available models
+      description: |
+        Returns a list of all available models on OpenRouter,
+        including pricing, context length, and capabilities.
+      tags:
+        - Models
+      x-audience: external
+      x-availability: stable
+      responses:
+        "200":
+          description: List of available models
+          content:
+            application/json:
+              schema:
+                $ref: "./schemas/responses/ModelListResponse.yaml"
+        "401":
+          $ref: "./schemas/errors/UnauthorizedError.yaml"
+
+  /models/{id}:
+    get:
+      operationId: getModel
+      summary: Get model information
+      description: |
+        Returns detailed information about a specific model,
+        including pricing, context length, and capabilities.
+      tags:
+        - Models
+      x-audience: external
+      x-availability: stable
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Model identifier (e.g., "anthropic/claude-3.5-sonnet")
+          schema:
+            type: string
+            examples:
+              - "anthropic/claude-3.5-sonnet"
+              - "openai/gpt-4o"
+              - "meta-llama/llama-3.1-405b-instruct"
+      responses:
+        "200":
+          description: Model details
+          content:
+            application/json:
+              schema:
+                $ref: "./schemas/models/Model.yaml"
+        "404":
+          $ref: "./schemas/errors/NotFoundError.yaml"
+
+  /auth/key:
+    get:
+      operationId: getApiKeyInfo
+      summary: Get API key information
+      description: |
+        Returns information about the currently authenticated API key,
+        including usage statistics and limits.
+      tags:
+        - Authentication
+      x-audience: external
+      x-availability: stable
+      responses:
+        "200":
+          description: API key information
+          content:
+            application/json:
+              schema:
+                $ref: "./schemas/responses/ApiKeyInfoResponse.yaml"
+        "401":
+          $ref: "./schemas/errors/UnauthorizedError.yaml"
+
+  /credits:
+    get:
+      operationId: getCredits
+      summary: Get credit balance
+      description: |
+        Returns the current credit balance for the authenticated account.
+      tags:
+        - Credits
+      x-audience: external
+      x-availability: stable
+      responses:
+        "200":
+          description: Credit balance information
+          content:
+            application/json:
+              schema:
+                $ref: "./schemas/responses/CreditsResponse.yaml"
+        "401":
+          $ref: "./schemas/errors/UnauthorizedError.yaml"
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      description: |
+        API key passed as a Bearer token in the Authorization header.
+        Obtain your API key from https://openrouter.ai/keys
+    httpBearer:
+      type: http
+      scheme: bearer
+      description: Alternative bearer token authentication
+
+  schemas:
+    # Core models
+    Model:
+      $ref: "./schemas/models/Model.yaml"
+    Message:
+      $ref: "./schemas/models/Message.yaml"
+    Choice:
+      $ref: "./schemas/models/Choice.yaml"
+    Usage:
+      $ref: "./schemas/models/Usage.yaml"
+    
+    # Request bodies
+    ChatCompletionRequest:
+      $ref: "./schemas/requests/ChatCompletionRequest.yaml"
+    
+    # Responses
+    ChatCompletionResponse:
+      $ref: "./schemas/responses/ChatCompletionResponse.yaml"
+    ModelListResponse:
+      $ref: "./schemas/responses/ModelListResponse.yaml"
+    ApiKeyInfoResponse:
+      $ref: "./schemas/responses/ApiKeyInfoResponse.yaml"
+    CreditsResponse:
+      $ref: "./schemas/responses/CreditsResponse.yaml"
+    
+    # Errors
+    Error:
+      $ref: "./schemas/errors/Error.yaml"

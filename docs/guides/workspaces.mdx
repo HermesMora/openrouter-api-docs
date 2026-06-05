@@ -1,0 +1,92 @@
+---
+title: "Workspaces"
+description: "Organize resources with workspaces"
+---
+
+# Workspaces
+
+Workspaces allow you to organize resources and manage access control.
+
+## Overview
+
+With workspaces, you can:
+- Separate resources by team or project
+- Control member access
+- Isolate API keys and guardrails
+- Track usage per workspace
+
+## List Workspaces
+
+```bash
+curl https://openrouter.ai/api/v1/workspaces \
+  -H "Authorization: Bearer $OPENR...
+## Create a Workspace
+
+```bash
+curl -X POST https://openrouter.ai/api/v1/workspaces \
+  -H "Authorization: Bearer *** \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "Engineering Team",
+    "description": "Resources for the engineering team"
+  }'
+```
+
+## Get a Workspace
+
+```bash
+curl https://openrouter.ai/api/v1/workspaces/{id} \
+  -H "Authorization: Bearer $OPENR...
+## Update a Workspace
+
+```bash
+curl -X PATCH https://openrouter.ai/api/v1/workspaces/{id} \
+  -H "Authorization: Bearer *** \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "Updated Name"
+  }'
+```
+
+## Delete a Workspace
+
+```bash
+curl -X DELETE https://openrouter.ai/api/v1/workspaces/{id} \
+  -H "Authorization: Bearer $OPENR...
+## Member Management
+
+### Add Members
+
+```bash
+curl -X POST https://openrouter.ai/api/v1/workspaces/{id}/members/add \
+  -H "Authorization: Bearer *** \
+  -H "Content-Type: application/json" \
+  -d '{
+    "members": [
+      {
+        "user_id": "user_123",
+        "role": "admin"
+      }
+    ]
+  }'
+```
+
+### Remove Members
+
+```bash
+curl -X POST https://openrouter.ai/api/v1/workspaces/{id}/members/remove \
+  -H "Authorization: Bearer *** \
+  -H "Content-Type: application/json" \
+  -d '{
+    "members": ["user_123"]
+  }'
+```
+
+## Member Roles
+
+| Role | Permissions |
+|------|-------------|
+| `owner` | Full control |
+| `admin` | Manage resources and members |
+| `member` | Use resources |
+| `viewer` | Read-only access |

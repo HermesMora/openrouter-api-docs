@@ -5,9 +5,9 @@ description: "Understanding and handling API errors"
 
 # Error Handling
 
-OpenRouter uses conventional HTTP response codes and returns structured error objects.
+OpenRouter returns standard HTTP status codes and structured error responses.
 
-## Error Format
+## Error Response Format
 
 All errors follow this structure:
 
@@ -15,9 +15,7 @@ All errors follow this structure:
 {
   "error": {
     "message": "Human-readable error description",
-    "type": "error_category",
-    "param": "parameter_name",
-    "code": "error_code"
+    "code": 400
   }
 }
 ```
@@ -26,38 +24,106 @@ All errors follow this structure:
 
 | Code | Meaning | Description |
 |------|---------|-------------|
-| 200 | OK | Request succeeded |
-| 400 | Bad Request | Invalid request format or parameters |
-| 401 | Unauthorized | Invalid or missing API key |
-| 404 | Not Found | Model or resource not found |
-| 429 | Rate Limited | Too many requests |
-| 500 | Server Error | Internal server error |
+| 200 | OK | Success |
+| 201 | Created | Resource created successfully |
+| 202 | Accepted | Request accepted for processing |
+| 400 | Bad Request | Invalid request parameters |
+| 401 | Unauthorized | Missing or invalid API key |
+| 402 | Payment Required | Insufficient credits |
+| 403 | Forbidden | Insufficient permissions |
+| 404 | Not Found | Resource does not exist |
+| 408 | Request Timeout | Request timed out |
+| 409 | Conflict | Resource conflict |
+| 410 | Gone | Resource permanently removed |
+| 413 | Payload Too Large | Request body too large |
+| 422 | Unprocessable Entity | Validation error |
+| 429 | Too Many Requests | Rate limit exceeded |
+| 500 | Internal Server Error | Server error |
+| 502 | Bad Gateway | Upstream provider error |
+| 503 | Service Unavailable | Service temporarily unavailable |
+| 524 | Edge Network Timeout | Cloudflare timeout |
+| 529 | Provider Overloaded | AI provider is overloaded |
 
-## Common Error Codes
+## Common Errors
 
-| Code | Description | Resolution |
-|------|-------------|------------|
-| `invalid_request_error` | Malformed request | Check request format |
-| `invalid_api_key` | Authentication failed | Verify API key |
-| `rate_limit_exceeded` | Too many requests | Wait and retry |
-| `model_not_found` | Model doesn't exist | Check model ID |
-| `insufficient_credits` | Out of credits | Add credits |
+### Rate Limit (429)
 
-## Retrying Requests
+```json
+{
+  "error": {
+    "message": "Rate limit exceeded. Please try again later.",
+    "code": 429
+  }
+}
+```
 
-For 429 or 5xx errors, implement exponential backoff:
+**Headers:**
+- `Retry-After`: Seconds until the rate limit resets
+
+### Insufficient Credits (402)
+
+```json
+{
+  "error": {
+    "message": "Insufficient credits. Please add more credits to your account.",
+    "code": 402
+  }
+}
+```
+
+### Provider Overloaded (529)
+
+```json
+{
+  "error": {
+    "message": "The selected provider is currently overloaded. Please try again or select a different model.",
+    "code": 529
+  }
+}
+```
+
+### Model Not Found (404)
+
+```json
+{
+  "error": {
+    "message": "Model not found",
+    "code": 404
+  }
+}
+```
+
+## Retry Strategy
+
+The API implements exponential backoff retries:
+
+- **Initial delay:** 500ms
+- **Max attempts:** 3
+- **Max delay:** 60 seconds
+- **Exponent:** 1.5
+
+The SDKs handle retries automatically. For manual implementations:
 
 ```python
 import time
 import random
 
-def retry_with_backoff(func, max_retries=3):
-    for attempt in range(max_retries):
+def retry_with_backoff(func, max_attempts=3):
+    for attempt in range(max_attempts):
         try:
             return func()
-        except RateLimitError:
-            if attempt == max_retries - 1:
+        except Exception as e:
+            if attempt == max_attempts - 1:
                 raise
-            delay = (2 ** attempt) + random.uniform(0, 1)
-            time.sleep(delay)
+            delay = min(500 * (1.5 ** attempt), 60000)
+            time.sleep(delay / 1000 + random.uniform(0, 0.1))
+```
+
+## Streaming Errors
+
+When streaming, errors may be returned as SSE events:
+
+```
+event: error
+data: {"error": {"message": "...", "code": 429}}
 ```

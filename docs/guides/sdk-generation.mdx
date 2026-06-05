@@ -1,0 +1,207 @@
+---
+title: "SDK Generation"
+description: "How OpenRouter generates SDKs from the OpenAPI specification"
+---
+
+# SDK Generation
+
+OpenRouter uses [Speakeasy](https://www.speakeasy.com/) to automatically generate
+official SDKs from the OpenAPI specification.
+
+## Supported Languages
+
+| Language | Package Name | Repository | Install Command |
+|----------|-------------|------------|-----------------|
+| Python | `openrouter` | [OpenRouterTeam/python-sdk](https://github.com/OpenRouterTeam/python-sdk) | `pip install openrouter` |
+| TypeScript | `@openrouter/sdk` | [OpenRouterTeam/typescript-sdk](https://github.com/OpenRouterTeam/typescript-sdk) | `npm install @openrouter/sdk` |
+| Go | `openrouter` | [OpenRouterTeam/go-sdk](https://github.com/OpenRouterTeam/go-sdk) | `go get github.com/OpenRouterTeam/go-sdk` |
+
+## Architecture
+
+```
+┌─────────────────┐     ┌──────────────┐     ┌─────────────┐     ┌──────────────┐
+│  openrouter-web │────▶│  in.openapi  │────▶│  Overlays   │────▶│  out.openapi │
+│   (monorepo)    │     │    (raw)     │     │ (6 layers)  │     │  (processed) │
+└─────────────────┘     └──────────────┘     └─────────────┘     └──────────────┘
+                                                                          │
+                                                                          ▼
+                                                                   ┌──────────────┐
+                                                                   │   Speakeasy  │
+                                                                   │   Generator  │
+                                                                   └──────────────┘
+                                                                          │
+                                                                          ▼
+                                                                   ┌──────────────┐
+                                                                   │  Python/TS/  │
+                                                                   │     Go SDK   │
+                                                                   └──────────────┘
+```
+
+## Input Specification
+
+The canonical OpenAPI spec is maintained in the private `openrouter-web` monorepo
+and synced to SDK repositories via automated daily PRs.
+
+**Location in SDK repos:** `.speakeasy/in.openapi.yaml`
+
+**Size:** ~28,775 lines, 591 schemas, 49 endpoints
+
+## Overlay Pipeline
+
+The raw spec goes through 6 overlay transformations before SDK generation:
+
+### 1. Open Enums (`open-enums.overlay.yaml`)
+Allows unknown enum values to prevent SDK breakage when new values are added:
+
+```yaml
+actions:
+  - target: $..[?length(@.enum) > 1]
+    update:
+      x-speakeasy-unknown-values: allow
+```
+
+### 2. Remove RSS Responses (`remove-rss-responses.overlay.yaml`)
+Strips RSS/XML response types and related parameters:
+
+```yaml
+actions:
+  - target: $..responses.*.content["application/rss+xml"]
+    remove: true
+  - target: $..parameters[?@.name == "use_rss"]
+    remove: true
+```
+
+### 3. Add Headers (`add-headers.overlay.yaml`)
+Injects global header parameters for app identification:
+
+- `HTTP-Referer` - App URL for rankings
+- `X-OpenRouter-Title` - App display name
+- `X-OpenRouter-Categories` - Comma-separated categories
+
+### 4. Simplify allOf (`allof-simplify.overlay.yaml`)
+Removes redundant inline enum definitions from `allOf` compositions.
+
+### 5. Boolean Query Params (`boolean-query-params.overlay.yaml`)
+Converts `x-openrouter-type: boolean` parameters from string to boolean type.
+
+### 6. Fix Nullable Pagination (`fix-nullable-pagination.overlay.yaml`)
+Removes `nullable: true` from offset query params to fix type errors.
+
+## Generation Configuration
+
+### Shared Settings (`gen.yaml`)
+
+```yaml
+generation:
+  sdkClassName: OpenRouter
+  maintainOpenAPIOrder: true
+  hoistGlobalSecurity: true
+  inferSSEOverload: true
+  flattenGlobalSecurity: true
+  allOfMergeStrategy: shallowMerge
+```
+
+### Language-Specific Settings
+
+**Python:**
+- `asyncMode: both` (sync + async)
+- `enumFormat: union`
+- `responseFormat: flat`
+- `sseFlatResponse: true`
+- `envVarPrefix: OPENROUTER`
+
+**TypeScript:**
+- `moduleFormat: esm`
+- `enumFormat: union`
+- `zodVersion: v4`
+- `enableCustomCodeRegions: true`
+
+**Go:**
+- `unionStrategy: populated-fields`
+- `nullableOptionalWrapper: true`
+- `maxMethodParams: 4`
+
+## Speakeasy Extensions
+
+The spec uses several Speakeasy-specific extensions:
+
+| Extension | Purpose | Count |
+|-----------|---------|-------|
+| `x-speakeasy-name-override` | Custom SDK method names | 48 endpoints |
+| `x-speakeasy-pagination` | Offset/limit pagination | 9 list endpoints |
+| `x-speakeasy-stream-request-field` | Mark streaming field | 3 endpoints |
+| `x-speakeasy-max-method-params` | Limit method params | 2 endpoints |
+| `x-speakeasy-retries` | Retry configuration | Root level |
+| `x-speakeasy-ignore` | Skip generation | 2 endpoints |
+| `x-fern-ignore` | Skip Fern generation | 1 endpoint |
+
+## CI/CD Pipeline
+
+### Generation Workflow
+- **Trigger:** Daily cron (`0 0 * * *`), manual dispatch, PR label changes
+- **Action:** `speakeasy-api/sdk-generation-action@v15`
+- **Mode:** `pr` (creates PR, auto-merges)
+
+### Publish Workflow
+- **Trigger:** Push to `main` when `.speakeasy/gen.lock` changes
+- **Targets:** PyPI (Python), npm (TypeScript)
+
+### Monorepo Sync
+- On push to `main`, sends `repository_dispatch` to `openrouter-web`
+- Event types: `sync-python-sdk`, `sync-typescript-sdk`, etc.
+
+## Streaming Support
+
+Three endpoints support Server-Sent Events (SSE):
+
+- `POST /chat/completions`
+- `POST /messages`
+- `POST /responses`
+
+Set `stream: true` in the request body. The SDK handles SSE parsing automatically.
+
+## Retry Configuration
+
+Root-level retry strategy:
+
+```yaml
+x-retry-strategy:
+  type: exponential
+  initialDelay: 500
+  maxAttempts: 3
+  maxDelay: 60000
+
+x-speakeasy-retries:
+  strategy: backoff
+  backoff:
+    exponent: 1.5
+    initialInterval: 500
+    maxInterval: 60000
+    maxElapsedTime: 3600000
+  statusCodes: ["5XX"]
+  retryConnectionErrors: true
+```
+
+## Linting
+
+Speakeasy lint configuration (`.speakeasy/lint.yaml`):
+
+```yaml
+lintVersion: 1.0.0
+defaultRuleset: openrouter
+rulesets:
+  openrouter:
+    rulesets:
+      - speakeasy-recommended
+      - speakeasy-generation
+    rules:
+      oas3-missing-example:
+        severity: "off"
+```
+
+## Registry
+
+Specs are published to the Speakeasy registry:
+
+- **Source:** `registry.speakeasyapi.dev/openrouter/sdk/open-router-chat-completions-api`
+- **Code Samples:** `registry.speakeasyapi.dev/openrouter/sdk/open-router-{lang}-code-samples`

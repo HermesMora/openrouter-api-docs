@@ -1,0 +1,86 @@
+---
+title: "Video Generation"
+description: "Generate videos from text prompts"
+---
+
+# Video Generation
+
+OpenRouter supports AI video generation through select providers.
+
+## Submit a Video Generation Request
+
+```bash
+curl -X POST https://openrouter.ai/api/v1/videos \
+  -H "Authorization: Bearer $OPENR...EY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "provider/video-model",
+    "prompt": "A serene landscape with mountains and a lake at sunset",
+    "duration": 5,
+    "resolution": "1080p"
+  }'
+```
+
+### Request Body
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `model` | string | Yes | Video model identifier |
+| `prompt` | string | Yes | Text description of the video |
+| `duration` | number | No | Video duration in seconds |
+| `resolution` | string | No | Output resolution |
+| `aspect_ratio` | string | No | Aspect ratio (e.g., "16:9") |
+
+### Response
+
+```json
+{
+  "id": "vid_abc123",
+  "status": "processing",
+  "created_at": 1234567890,
+  "estimated_completion": 1234567950
+}
+```
+
+## Poll for Status
+
+```bash
+curl https://openrouter.ai/api/v1/videos/{jobId} \
+  -H "Authorization: Bearer $OPENR...EY"
+```
+
+### Response
+
+```json
+{
+  "id": "vid_abc123",
+  "status": "completed",
+  "created_at": 1234567890,
+  "completed_at": 1234567950,
+  "url": "https://.../video.mp4"
+}
+```
+
+## Download Video
+
+```bash
+curl https://openrouter.ai/api/v1/videos/{jobId}/content \
+  -H "Authorization: Bearer $OPENR...EY" \
+  --output video.mp4
+```
+
+## List Video Models
+
+```bash
+curl https://openrouter.ai/api/v1/videos/models \
+  -H "Authorization: Bearer $OPENR...EY"
+```
+
+## Status Values
+
+| Status | Description |
+|--------|-------------|
+| `pending` | Request queued |
+| `processing` | Video being generated |
+| `completed` | Video ready for download |
+| `failed` | Generation failed |

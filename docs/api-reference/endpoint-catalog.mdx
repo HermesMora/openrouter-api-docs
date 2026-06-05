@@ -1,0 +1,163 @@
+---
+title: "API Endpoint Catalog"
+description: "Complete listing of all OpenRouter API endpoints"
+---
+
+# API Endpoint Catalog
+
+The OpenRouter API provides **49 endpoints** across **23 categories**.
+
+## Public Endpoints (No Authentication)
+
+These endpoints can be accessed without an API key:
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/models` | List all available models |
+| GET | `/models/{author}/{slug}/endpoints` | List endpoints for a specific model |
+
+## Authentication Endpoints
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| POST | `/auth/keys` | Exchange authorization code for API key |
+| POST | `/auth/keys/code` | Create authorization code |
+| GET | `/key` | Get current API key metadata |
+| GET | `/keys` | List API keys |
+| POST | `/keys` | Create a new API key |
+| GET | `/keys/{hash}` | Get a single API key |
+| PATCH | `/keys/{hash}` | Update an API key |
+| DELETE | `/keys/{hash}` | Delete an API key |
+
+## Chat & Completions
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| POST | `/chat/completions` | Create a chat completion |
+| POST | `/messages` | Create a message (Anthropic format) |
+| POST | `/responses` | Create a response (OpenAI format) |
+
+## Models
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/models` | List all models |
+| GET | `/models/count` | Get total model count |
+| GET | `/models/user` | List models for user preferences |
+| GET | `/models/{author}/{slug}/endpoints` | List model endpoints |
+| GET | `/providers` | List all providers |
+| GET | `/endpoints/zdr` | Preview ZDR impact |
+
+## Audio
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| POST | `/audio/speech` | Text-to-speech |
+| POST | `/audio/transcriptions` | Speech-to-text |
+
+## Embeddings
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| POST | `/embeddings` | Create embeddings |
+| GET | `/embeddings/models` | List embedding models |
+
+## Rerank
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| POST | `/rerank` | Submit rerank request |
+
+## Video Generation
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| POST | `/videos` | Submit video generation |
+| GET | `/videos/models` | List video models |
+| GET | `/videos/{jobId}` | Get video status |
+| GET | `/videos/{jobId}/content` | Download video |
+
+## Credits & Billing
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/credits` | Get credit balance |
+| POST | `/credits/coinbase` | Create Coinbase charge (deprecated) |
+
+## Generations
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/generation` | Get generation metadata |
+| GET | `/generation/content` | Get generation content |
+
+## Analytics
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/activity` | Get user activity |
+| GET | `/datasets/rankings-daily` | Daily rankings |
+
+## Guardrails
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/guardrails` | List guardrails |
+| POST | `/guardrails` | Create guardrail |
+| GET | `/guardrails/{id}` | Get guardrail |
+| PATCH | `/guardrails/{id}` | Update guardrail |
+| DELETE | `/guardrails/{id}` | Delete guardrail |
+| GET | `/guardrails/{id}/assignments/keys` | List key assignments |
+| POST | `/guardrails/{id}/assignments/keys` | Bulk assign keys |
+| POST | `/guardrails/{id}/assignments/keys/remove` | Bulk unassign keys |
+| GET | `/guardrails/{id}/assignments/members` | List member assignments |
+| POST | `/guardrails/{id}/assignments/members` | Bulk assign members |
+| POST | `/guardrails/{id}/assignments/members/remove` | Bulk unassign members |
+| GET | `/guardrails/assignments/keys` | List all key assignments |
+| GET | `/guardrails/assignments/members` | List all member assignments |
+
+## BYOK (Bring Your Own Key)
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/byok` | List BYOK credentials |
+| POST | `/byok` | Create BYOK credential |
+| GET | `/byok/{id}` | Get BYOK credential |
+| PATCH | `/byok/{id}` | Update BYOK credential |
+| DELETE | `/byok/{id}` | Delete BYOK credential |
+
+## Observability
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/observability/destinations` | List destinations |
+| POST | `/observability/destinations` | Create destination |
+| GET | `/observability/destinations/{id}` | Get destination |
+| PATCH | `/observability/destinations/{id}` | Update destination |
+| DELETE | `/observability/destinations/{id}` | Delete destination |
+
+## Workspaces
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/workspaces` | List workspaces |
+| POST | `/workspaces` | Create workspace |
+| GET | `/workspaces/{id}` | Get workspace |
+| PATCH | `/workspaces/{id}` | Update workspace |
+| DELETE | `/workspaces/{id}` | Delete workspace |
+| POST | `/workspaces/{id}/members/add` | Add members |
+| POST | `/workspaces/{id}/members/remove` | Remove members |
+
+## Organization
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/organization/members` | List organization members |
+
+## Presets
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| POST | `/presets/{slug}/chat/completions` | Create preset from chat |
+| POST | `/presets/{slug}/messages` | Create preset from messages |
+| POST | `/presets/{slug}/responses` | Create preset from responses |

@@ -1,0 +1,105 @@
+---
+title: "Embeddings"
+description: "Generate text embeddings for semantic search and similarity"
+---
+
+# Embeddings
+
+OpenRouter provides text embedding endpoints for semantic search, clustering, and similarity tasks.
+
+## Create Embeddings
+
+```bash
+curl -X POST https://openrouter.ai/api/v1/embeddings \
+  -H "Authorization: Bearer $OPENR...EY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "openai/text-embedding-3-small",
+    "input": "The quick brown fox jumps over the lazy dog"
+  }'
+```
+
+### Request Body
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `model` | string | Yes | Embedding model identifier |
+| `input` | string/array | Yes | Text to embed |
+| `encoding_format` | string | No | Output format (float, base64) |
+| `dimensions` | number | No | Number of dimensions |
+
+### Response
+
+```json
+{
+  "object": "list",
+  "data": [
+    {
+      "object": "embedding",
+      "embedding": [0.0023, -0.0091, ...],
+      "index": 0
+    }
+  ],
+  "model": "openai/text-embedding-3-small",
+  "usage": {
+    "prompt_tokens": 9,
+    "total_tokens": 9
+  }
+}
+```
+
+## Batch Embeddings
+
+Embed multiple texts in a single request:
+
+```bash
+curl -X POST https://openrouter.ai/api/v1/embeddings \
+  -H "Authorization: Bearer $OPENR...EY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "openai/text-embedding-3-small",
+    "input": [
+      "First text to embed",
+      "Second text to embed",
+      "Third text to embed"
+    ]
+  }'
+```
+
+## List Embedding Models
+
+```bash
+curl https://openrouter.ai/api/v1/embeddings/models \
+  -H "Authorization: Bearer $OPENR...
+## Supported Models
+
+| Provider | Model | Dimensions |
+|----------|-------|-----------|
+| OpenAI | text-embedding-3-small | 1536 |
+| OpenAI | text-embedding-3-large | 3072 |
+| OpenAI | text-embedding-ada-002 | 1536 |
+| Cohere | embed-english-v3 | 1024 |
+| Cohere | embed-multilingual-v3 | 1024 |
+
+## Use Cases
+
+- **Semantic Search**: Find similar documents
+- **Clustering**: Group related content
+- **Classification**: Categorize text
+- **Recommendation**: Suggest similar items
+- **Anomaly Detection**: Find outliers
+
+## Streaming
+
+Embeddings also support streaming for large batches:
+
+```bash
+curl -X POST https://openrouter.ai/api/v1/embeddings \
+  -H "Authorization: Bearer *** \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "openai/text-embedding-3-small",
+    "input": ["text1", "text2"],
+    "stream": true
+  }'
+```

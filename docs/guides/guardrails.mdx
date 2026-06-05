@@ -1,0 +1,118 @@
+---
+title: "Guardrails"
+description: "Content moderation and safety with guardrails"
+---
+
+# Guardrails
+
+Guardrails provide content moderation and safety controls for your AI applications.
+
+## Overview
+
+Guardrails allow you to:
+- Filter inappropriate content
+- Enforce content policies
+- Apply custom moderation rules
+- Assign guardrails to specific API keys or members
+
+## List Guardrails
+
+```bash
+curl https://openrouter.ai/api/v1/guardrails \
+  -H "Authorization: Bearer $OPENR...EY"
+```
+
+## Create a Guardrail
+
+```bash
+curl -X POST https://openrouter.ai/api/v1/guardrails \
+  -H "Authorization: Bearer $OPENR...EY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "My Guardrail",
+    "description": "Content moderation for customer support",
+    "filters": [
+      {
+        "type": "prompt_injection",
+        "action": "block"
+      }
+    ]
+  }'
+```
+
+## Get a Guardrail
+
+```bash
+curl https://openrouter.ai/api/v1/guardrails/{id} \
+  -H "Authorization: Bearer $OPENR...EY"
+```
+
+## Update a Guardrail
+
+```bash
+curl -X PATCH https://openrouter.ai/api/v1/guardrails/{id} \
+  -H "Authorization: Bearer $OPENR...EY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "Updated Guardrail"
+  }'
+```
+
+## Delete a Guardrail
+
+```bash
+curl -X DELETE https://openrouter.ai/api/v1/guardrails/{id} \
+  -H "Authorization: Bearer $OPENR...EY"
+```
+
+## Assignments
+
+### Assign to API Keys
+
+```bash
+curl -X POST https://openrouter.ai/api/v1/guardrails/{id}/assignments/keys \
+  -H "Authorization: Bearer $OPENR...EY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "keys": ["key_hash_1", "key_hash_2"]
+  }'
+```
+
+### Unassign from API Keys
+
+```bash
+curl -X POST https://openrouter.ai/api/v1/guardrails/{id}/assignments/keys/remove \
+  -H "Authorization: Bearer $OPENR...EY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "keys": ["key_hash_1"]
+  }'
+```
+
+### Assign to Members
+
+```bash
+curl -X POST https://openrouter.ai/api/v1/guardrails/{id}/assignments/members \
+  -H "Authorization: Bearer $OPENR...EY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "members": ["user_id_1", "user_id_2"]
+  }'
+```
+
+## Filter Types
+
+| Filter | Description |
+|--------|-------------|
+| `prompt_injection` | Detect and block prompt injection attacks |
+| `pii` | Detect and redact personally identifiable information |
+| `toxicity` | Detect toxic content |
+| `custom` | Custom regex or keyword filters |
+
+## Actions
+
+| Action | Description |
+|--------|-------------|
+| `block` | Reject the request |
+| `log` | Allow but log for review |
+| `redact` | Remove sensitive content |

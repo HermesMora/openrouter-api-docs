@@ -1,0 +1,78 @@
+---
+title: "Rerank"
+description: "Rerank documents for improved search relevance"
+---
+
+# Rerank
+
+OpenRouter provides reranking endpoints to improve search relevance.
+
+## Submit a Rerank Request
+
+```bash
+curl -X POST https://openrouter.ai/api/v1/rerank \
+  -H "Authorization: Bearer $OPENROUTER_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "cohere/rerank-english-v3",
+    "query": "What is machine learning?",
+    "documents": [
+      "Machine learning is a subset of AI...",
+      "Deep learning uses neural networks...",
+      "Python is a programming language..."
+    ],
+    "top_n": 3
+  }'
+```
+
+### Request Body
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `model` | string | Yes | Rerank model identifier |
+| `query` | string | Yes | Search query |
+| `documents` | array | Yes | Documents to rerank |
+| `top_n` | number | No | Number of top results to return |
+| `return_documents` | boolean | No | Include documents in response |
+
+### Response
+
+```json
+{
+  "results": [
+    {
+      "index": 0,
+      "relevance_score": 0.98,
+      "document": "Machine learning is a subset of AI..."
+    },
+    {
+      "index": 1,
+      "relevance_score": 0.85,
+      "document": "Deep learning uses neural networks..."
+    }
+  ]
+}
+```
+
+## Supported Models
+
+| Provider | Model |
+|----------|-------|
+| Cohere | rerank-english-v3 |
+| Cohere | rerank-multilingual-v3 |
+
+## Streaming
+
+Rerank also supports streaming for large document sets:
+
+```bash
+curl -X POST https://openrouter.ai/api/v1/rerank \
+  -H "Authorization: Bearer $OPENROUTER_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "cohere/rerank-english-v3",
+    "query": "...",
+    "documents": [...],
+    "stream": true
+  }'
+```
